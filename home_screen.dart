@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:age_prediction/name_api.dart';
+import 'package:age_prediction/country_identifier.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,20 +15,27 @@ class _HomeScreenState extends State<HomeScreen> {
   // of the TextField.
   final myController = TextEditingController();
 
-  String? userName;
+  String? userName = '[ENTER NAME]';
   int? age = 0;
   int? count = 0;
+  String countryname = '[ENTER COUNTRY]';
+  String dropdownValue = 'Country';
+  String actualvalue = 'CA';
 
-  void setupNameAPI(String name) async {
-    NameAPI startup = NameAPI(name);
-    await startup.getAge(name);
+  void setupNameAPI(String name, String country) async {
 
-      userName = startup.named!;
-      age = startup.age!;
-      count = startup.count!;
-      setState(() {
+    NameAPI startup = NameAPI(name, actualvalue);
+    await startup.getAge(name, actualvalue);
 
-      });
+    userName = startup.named!;
+    age = startup.age!;
+    count = startup.count!;
+    country = actualvalue;
+    countryname = dropdownValue;
+
+    setState(() {
+
+    });
   }
 
   @override
@@ -62,11 +70,6 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             TextField(
-              onChanged: (text) {
-                print('Name: $text');
-              },
-            ),
-            TextField(
               controller: myController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
@@ -78,15 +81,48 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(
               height: 20.0,
             ),
+            DropdownButton<String>(
+              value: dropdownValue,
+              icon: const Icon(Icons.arrow_drop_down),
+              iconSize: 24,
+              elevation: 16,
+              style: const TextStyle(color: Colors.deepPurple),
+              underline: Container(
+                height: 2,
+                color: Colors.deepPurpleAccent,
+              ),
+              onChanged: (String? newValue) {
+                setState(() {
+                  dropdownValue = newValue!;
+                  NameIdentifier changed = NameIdentifier(dropdownValue);
+                  changed.getCountry(dropdownValue);
+                  actualvalue = changed.initials;
+                });
+              },
+              items: <String>['Country', 'France', 'Italy', 'Spain',
+                'Turkey', 'Germany', 'United Kingdom', 'Russia',
+                'Saudi Arabia', 'Japan', 'Canada', 'United States'
+              ].map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+            const SizedBox(
+              height: 20.0,
+            ),
             MaterialButton(
-              onPressed: () {setupNameAPI(myController.text);},
+              onPressed: () {
+                setupNameAPI(myController.text, actualvalue);
+                },
               color: Colors.blueAccent,
               child: Text("Calculate", style: TextStyle(color: Colors.white),),
             ),
             const SizedBox(
               height: 20.0,
             ),
-            Text("Age : $age"),
+            Text("Age : $age for $userName in $countryname", style: TextStyle(fontSize: 20.0,),),
           ],
         ),
       ),
