@@ -6,7 +6,5 @@ void main() => runApp(MaterialApp(
   initialRoute: '/',
   routes: {
     '/': (context) => HomeScreen(),
-    //'/home': (context) => EnterText(),
-    //'/location': (context) => ChooseLanguage(),
   },
 ));
