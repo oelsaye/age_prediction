@@ -6,23 +6,29 @@ import 'package:intl/intl.dart';
 class NameAPI {
 
   String? named; //name of the person
+  String? countrys; //Country of the person
   int? age = 0; //age of the person
   int? count = 0; //amount of people with that name
 
-  NameAPI(String text);
+  String? url;
 
-  Future<void> getAge(String name) async {
+  NameAPI(String text, String text2);
+
+  Future<void> getAge(String name, String country) async {
     try {
-      String apiurl = 'https://api.agify.io?name=$name';
-      final Uri url2 = Uri.parse(apiurl);
-      Response response = await get(url2);
-      Map data = jsonDecode(response.body);
+      if (country != 'Country')
+        {
+          String apiurl = 'https://api.agify.io?name=$name&country_id=$country';
+          url = apiurl;
+          final Uri url2 = Uri.parse(apiurl);
+          Response response = await get(url2);
+          Map data = jsonDecode(response.body);
 
-      //get properties from data
-      named = data['name'];
-      age = data['age'];
-      count = data['count'];
-      print(age);
+          //get properties from data
+          named = data['name'];
+          age = data['age'];
+          count = data['count'];
+        }
     }
 
     catch (e) {
